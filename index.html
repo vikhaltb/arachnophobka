@@ -2,8 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARACHNOPHOBKA.COM</title>
   <style>
+    /* Универсальные настройки */
+    * { box-sizing: border-box; }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       margin: 0;
@@ -19,13 +23,13 @@
       content: "";
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8); /* затемнение */
+      background: rgba(0,0,0,0.8);
       z-index: 0;
     }
 
     header {
-      background: linear-gradient(135deg, rgba(102,0,0,0.6), rgba(51,0,0,0.6)); /* прозрачнее */
-      padding: 30px 20px;
+      background: linear-gradient(135deg, rgba(102,0,0,0.6), rgba(51,0,0,0.6));
+      padding: 25px 15px;
       text-align: center;
       box-shadow: 0 4px 8px rgba(0,0,0,0.6);
       position: relative;
@@ -37,10 +41,12 @@
       align-items: center;
       justify-content: center;
       gap: 15px;
+      flex-wrap: wrap;
     }
 
     .side-logo {
-      height: 60px;
+      height: auto;
+      max-height: 60px;
     }
 
     h1 {
@@ -60,7 +66,7 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
       padding: 0 15px;
       position: relative;
@@ -74,7 +80,7 @@
       margin: 20px 0;
       box-shadow: 0 4px 8px rgba(0,0,0,0.5);
       opacity: 0;
-      transform: scale(0.9) translateY(20px);
+      transform: scale(0.95) translateY(20px);
       animation: scaleIn 0.6s forwards;
       transition: transform 0.3s, box-shadow 0.3s;
     }
@@ -85,7 +91,7 @@
     }
 
     input, textarea, button {
-      width: calc(100% - 24px);
+      width: 100%;
       padding: 12px;
       margin: 8px 0;
       border-radius: 8px;
@@ -93,19 +99,13 @@
       font-size: 15px;
     }
 
-    input, textarea {
-      background: #444;
-      color: #eee;
-    }
-
-    input:focus, textarea:focus {
-      outline: 2px solid #ff4444;
-    }
+    input, textarea { background: #444; color: #eee; }
+    input:focus, textarea:focus { outline: 2px solid #ff4444; }
 
     button {
-      margin: 0 auto;
       display: block;
-      width: 200px;
+      max-width: 200px;
+      margin: 10px auto 0 auto;
       background: #ff4444;
       color: white;
       font-weight: bold;
@@ -113,9 +113,7 @@
       transition: 0.3s;
     }
 
-    button:hover {
-      background: #cc0000;
-    }
+    button:hover { background: #cc0000; }
 
     .entry {
       border-bottom: 1px solid #444;
@@ -123,13 +121,8 @@
       text-align: left;
     }
 
-    .entry:last-child {
-      border-bottom: none;
-    }
-
-    .entry b {
-      color: #ff6666;
-    }
+    .entry:last-child { border-bottom: none; }
+    .entry b { color: #ff6666; }
 
     footer {
       text-align: center;
@@ -154,7 +147,7 @@
       animation: spin 1s linear infinite;
     }
 
-    /* Уведомления */
+    /* Toast */
     #toast {
       position: fixed;
       bottom: -60px;
@@ -176,25 +169,17 @@
     }
 
     /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.9) translateY(20px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
+    /* Адаптив для мобильных */
     @media (max-width: 600px) {
       h1 { font-size: 28px; }
-      .side-logo { height: 40px; }
+      .side-logo { max-height: 40px; }
       .container { padding: 0 10px; }
+      .card { padding: 15px; margin: 15px 0; }
+      input, textarea, button { font-size: 14px; padding: 10px; }
     }
   </style>
 </head>
@@ -243,9 +228,7 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwC5u_q25IgQcN-nxzkSvqz--arrs4UA5gAvjlaPbLW4yVgqXOY6GHH5RLpRnL3CXuNIA/exec";
 
-    function normalize(str) {
-      return str.toLowerCase().replace(/[\s\-]+/g, "");
-    }
+    function normalize(str) { return str.toLowerCase().replace(/[\s\-]+/g, ""); }
 
     function showToast(msg) {
       const toast = document.getElementById("toast");
@@ -256,10 +239,7 @@
 
     async function loadData() {
       const searchRaw = document.getElementById("search").value.trim();
-      if (!searchRaw) {
-        showToast("Введите название для поиска");
-        return;
-      }
+      if (!searchRaw) { showToast("Введите название для поиска"); return; }
       const search = normalize(searchRaw);
 
       const loader = document.getElementById("loader");
@@ -274,8 +254,6 @@
       resultsDiv.innerHTML = "";
 
       let filtered = data.filter(row => normalize(row.movie).includes(search));
-
-      const title = document.getElementById("title");
 
       if (filtered.length === 0) {
         resultsDiv.innerHTML = "<p>Ничего подозрительного не найдено ✅</p>";
@@ -296,10 +274,7 @@
       const time = document.getElementById("time").value.trim();
       const comment = document.getElementById("comment").value.trim();
 
-      if (!movie || !time || !comment) {
-        showToast("❌ Заполни все поля!");
-        return;
-      }
+      if (!movie || !time || !comment) { showToast("❌ Заполни все поля!"); return; }
 
       const loader = document.getElementById("form-loader");
       loader.style.display = "block";
@@ -310,7 +285,6 @@
       });
 
       loader.style.display = "none";
-
       showToast("✅ Спасибо! Мы сохранили твою находку");
 
       document.getElementById("movie").value = "";

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARACHNOPHOBKA.COM</title>
+  <link rel="icon" type="image/png" href="sm.png">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #111 url("wall.png") repeat;
+      background-size: cover;
+      color: #eee;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 0;
+    }
+
+    /* Паутина по бокам */
+    .web {
+      position: fixed;
+      top: 0;
+      width: 500px;
+      height: auto;
+      opacity: 0.3;
+      z-index: 1;
+    }
+    .web.left { left: 0; }
+    .web.right { right: 0; transform: scaleX(-1); }
+
+    header {
+      background: linear-gradient(135deg, rgba(102,0,0,0.6), rgba(51,0,0,0.6));
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .side-logo { max-height: 55px; }
+
+    h1 {
+      margin: 10px 0 0 0;
+      font-size: 34px;
+      color: #ff4444;
+      text-shadow: 2px 2px 4px black;
+      text-transform: uppercase;
+    }
+
+    p.slogan {
+      font-size: 18px;
+      color: #ffbbbb;
+      margin-top: 5px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 0 15px;
+      position: relative;
+      z-index: 2;
+    }
+
+	.card {
+	  background: #2b2b2b;
+	  border-radius: 12px;
+	  padding: 20px;
+	  margin: 20px 0;
+	  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+	  
+	}
+	
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+    }
+    input, textarea { background: #444; color: #eee; }
+    input:focus, textarea:focus { outline: 2px solid #ff4444; }
+
+    button {
+      display: block;
+      max-width: 200px;
+      margin: 10px auto 0 auto;
+      background: #ff4444;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      position: relative;
+    }
+    button:hover { background: #cc0000; }
+    button.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    button .spinner {
+      border: 3px solid #fff;
+      border-top: 3px solid transparent;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+
+    .entry {
+      border-bottom: 1px solid #444;
+      padding: 10px 0;
+      text-align: left;
+    }
+    .entry:last-child { border-bottom: none; }
+    .entry b { color: #ff6666; }
+
+    .highlight { background: yellow; color: black; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: #888;
+      border-top: 1px solid #333;
+      margin-top: 40px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff4444;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.5s ease;
+      z-index: 9999;
+    }
+    #toast.show { bottom: 30px; opacity: 1; }
+
+    /* Animations */
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Адаптив */
+    @media (max-width: 600px) {
+      h1 { font-size: 26px; }
+      .side-logo { max-height: 38px; }
+      .container { padding: 0 10px; }
+      .card { padding: 15px; margin: 15px 0; }
+      input, textarea, button { font-size: 14px; padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <img src="pautina.png" class="web left" alt="Паутина">
+  <img src="pautina.png" class="web right" alt="Паутина">
+
+  <header>
+    <div class="logo-title">
+      <img src="sign.png" alt="Логотип" class="side-logo">
+      <h1>ARACHNOPHOBKA.COM</h1>
+      <img src="sign.png" alt="Логотип" class="side-logo">
+    </div>
+    <p class="slogan">Мы ищем за тебя, чтобы ты мог смотреть спокойно 👀</p>
+  </header>
+
+  <div class="container">
+    <!-- Поиск -->
+    <div class="card">
+      <h3>🔍 Поиск фильма</h3>
+      <input type="text" id="search" placeholder="Введите название фильма...">
+      <button id="searchBtn" onclick="loadData()">Искать</button>
+    </div>
+
+    <!-- Результаты -->
+    <div class="card" id="results">
+      <p>Здесь появятся результаты поиска...</p>
+    </div>
+
+    <!-- Форма -->
+    <div class="card">
+      <h3>📝 Сообщить о находке</h3>
+      <input type="text" id="movie" placeholder="Название фильма">
+      <input type="text" id="time" placeholder="Время (например 00:45:10)">
+      <textarea id="comment" placeholder="Комментарий"></textarea>
+      <button id="submitBtn" onclick="submitData()">Отправить</button>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 ARACHNOPHOBKA.COM — никаких страшностей, только спокойствие ❌
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwC5u_q25IgQcN-nxzkSvqz--arrs4UA5gAvjlaPbLW4yVgqXOY6GHH5RLpRnL3CXuNIA/exec";
+
+    function normalize(str) { return str.toLowerCase().replace(/[\s\-]+/g, ""); }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    function highlight(text, search) {
+      const regex = new RegExp(`(${search})`, "gi");
+      return text.replace(regex, `<span class="highlight">$1</span>`);
+    }
+
+    async function loadData() {
+      const searchBtn = document.getElementById("searchBtn");
+      const searchRaw = document.getElementById("search").value.trim();
+      if (!searchRaw) { showToast("Введите название для поиска"); return; }
+      const search = normalize(searchRaw);
+
+      searchBtn.classList.add("loading");
+      searchBtn.innerHTML = '<span class="spinner"></span>';
+
+      const res = await fetch(API_URL);
+      const data = await res.json();
+
+      searchBtn.classList.remove("loading");
+      searchBtn.innerHTML = "Искать";
+
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      let filtered = data.filter(row => normalize(row.movie).includes(search));
+
+      if (filtered.length === 0) {
+        resultsDiv.innerHTML = "<p>Ничего подозрительного не найдено ✅</p>";
+      } else {
+        filtered.forEach(row => {
+          const div = document.createElement("div");
+          div.className = "entry";
+          div.innerHTML = `<b>${highlight(row.movie, searchRaw)}</b> [${row.time}]<br>${highlight(row.comment, searchRaw)}`;
+          resultsDiv.appendChild(div);
+        });
+      }
+    }
+
+    async function submitData() {
+      const submitBtn = document.getElementById("submitBtn");
+      const movie = document.getElementById("movie").value.trim();
+      const time = document.getElementById("time").value.trim();
+      const comment = document.getElementById("comment").value.trim();
+
+      if (!movie || !time || !comment) {
+        showToast("❌ Заполни все поля!");
+        return;
+      }
+
+      submitBtn.classList.add("loading");
+      submitBtn.innerHTML = '<span class="spinner"></span>';
+
+      await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ movie, time, comment })
+      });
+
+      submitBtn.classList.remove("loading");
+      submitBtn.innerHTML = "Отправить";
+
+      showToast("✅ Спасибо! Мы сохранили твою находку");
+
+      document.getElementById("movie").value = "";
+      document.getElementById("time").value = "";
+      document.getElementById("comment").value = "";
+    }
+  </script>
+</body>
+</html>

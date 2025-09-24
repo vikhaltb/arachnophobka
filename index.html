@@ -29,23 +29,37 @@
 
     /* Паутина по бокам */
     .web {
-      position: fixed;
-      top: 0;
-      width: 500px;
-      height: auto;
-      opacity: 0.3;
-      z-index: 1;
-    }
-    .web.left { left: 0; }
-    .web.right { right: 0; transform: scaleX(-1); }
+	  position: fixed;
+	  top: 0;
+	  width: 500px;   
+	  height: auto;
+	  opacity: 0.3;
+	  z-index: 1;
+	}
+	
+	.web.left { left: 0; }
+	.web.right { right: 0; transform: scaleX(-1); }
+	
+	@media (max-width: 768px) {
+	  .web { width: 180px; }   /* планшет */
+	}
+
+	@media (max-width: 480px) {
+	  .web { width: 120px; }   /* телефон */
+	}
+
 
     header {
       background: linear-gradient(135deg, rgba(102,0,0,0.6), rgba(51,0,0,0.6));
-      padding: 20px 15px;
+      padding: 15px;
       text-align: center;
       box-shadow: 0 4px 8px rgba(0,0,0,0.6);
       position: relative;
       z-index: 2;
+	  max-width: 670px;
+	  margin: 0 auto;
+	  margin-top: 10px;
+	  border-radius: 12px;
     }
 
     .logo-title {
@@ -270,6 +284,9 @@
         });
       }
     }
+	document.getElementById("search").addEventListener("keydown", e => {
+	  if (e.key === "Enter") loadData();
+	});
 
     async function submitData() {
       const submitBtn = document.getElementById("submitBtn");

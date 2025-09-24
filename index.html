@@ -29,25 +29,17 @@
 
     /* Паутина по бокам */
     .web {
-	  position: fixed;
-	  top: 0;
-	  width: 500px;   
-	  height: auto;
-	  opacity: 0.3;
-	  z-index: 1;
-	}
-	
-	.web.left { left: 0; }
-	.web.right { right: 0; transform: scaleX(-1); }
-	
-	@media (max-width: 768px) {
-	  .web { width: 180px; }   /* планшет */
-	}
-
-	@media (max-width: 480px) {
-	  .web { width: 120px; }   /* телефон */
-	}
-
+      position: fixed;
+      top: 0;
+      width: 500px;
+      height: auto;
+      opacity: 0.3;
+      z-index: 1;
+    }
+    .web.left { left: 0; }
+    .web.right { right: 0; transform: scaleX(-1); }
+    @media (max-width: 768px) { .web { width: 180px; } }
+    @media (max-width: 480px) { .web { width: 120px; } }
 
     header {
       background: linear-gradient(135deg, rgba(102,0,0,0.6), rgba(51,0,0,0.6));
@@ -56,21 +48,10 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.6);
       position: relative;
       z-index: 2;
-	  max-width: 670px;
-	  margin: 0 auto;
-	  margin-top: 10px;
-	  border-radius: 12px;
+      max-width: 670px;
+      margin: 10px auto 0 auto;
+      border-radius: 12px;
     }
-
-    .logo-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    .side-logo { max-height: 55px; }
 
     h1 {
       margin: 10px 0 0 0;
@@ -94,15 +75,14 @@
       z-index: 2;
     }
 
-	.card {
-	  background: #2b2b2b;
-	  border-radius: 12px;
-	  padding: 20px;
-	  margin: 20px 0;
-	  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-	  
-	}
-	
+    .card {
+      background: #2b2b2b;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    }
+
     input, textarea, button {
       width: 100%;
       padding: 12px;
@@ -126,10 +106,7 @@
       position: relative;
     }
     button:hover { background: #cc0000; }
-    button.loading {
-      pointer-events: none;
-      opacity: 0.7;
-    }
+    button.loading { pointer-events: none; opacity: 0.7; }
     button .spinner {
       border: 3px solid #fff;
       border-top: 3px solid transparent;
@@ -142,14 +119,12 @@
       margin-left: 8px;
     }
 
-    .entry {
-      border-bottom: 1px solid #444;
-      padding: 10px 0;
-      text-align: left;
-    }
+    /* Результаты поиска */
+    .entry { opacity: 0; transform: translateY(10px); transition: 0.3s; }
+    .entry.show { opacity: 1; transform: translateY(0); }
+    .entry { border-bottom: 1px solid #444; padding: 10px 0; text-align: left; }
     .entry:last-child { border-bottom: none; }
     .entry b { color: #ff6666; }
-
     .highlight { background: yellow; color: black; }
 
     footer {
@@ -180,13 +155,12 @@
     }
     #toast.show { bottom: 30px; opacity: 1; }
 
-    /* Animations */
+    /* Анимации */
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* Адаптив */
     @media (max-width: 600px) {
       h1 { font-size: 26px; }
-      .side-logo { max-height: 38px; }
       .container { padding: 0 10px; }
       .card { padding: 15px; margin: 15px 0; }
       input, textarea, button { font-size: 14px; padding: 10px; }
@@ -198,11 +172,7 @@
   <img src="pautina.png" class="web right" alt="Паутина">
 
   <header>
-    <div class="logo-title">
-      <img src="sign.png" alt="Логотип" class="side-logo">
-      <h1>ARACHNOPHOBKA.COM</h1>
-      <img src="sign.png" alt="Логотип" class="side-logo">
-    </div>
+    <h1>ARACHNOPHOBKA.COM</h1>
     <p class="slogan">Мы ищем за тебя, чтобы ты мог смотреть спокойно 👀</p>
   </header>
 
@@ -281,12 +251,12 @@
           div.className = "entry";
           div.innerHTML = `<b>${highlight(row.movie, searchRaw)}</b> [${row.time}]<br>${highlight(row.comment, searchRaw)}`;
           resultsDiv.appendChild(div);
+          setTimeout(() => div.classList.add('show'), 10);
         });
       }
     }
-	document.getElementById("search").addEventListener("keydown", e => {
-	  if (e.key === "Enter") loadData();
-	});
+
+    document.getElementById("search").addEventListener("keydown", e => { if (e.key === "Enter") loadData(); });
 
     async function submitData() {
       const submitBtn = document.getElementById("submitBtn");
@@ -294,18 +264,16 @@
       const time = document.getElementById("time").value.trim();
       const comment = document.getElementById("comment").value.trim();
 
-      if (!movie || !time || !comment) {
-        showToast("❌ Заполни все поля!");
-        return;
-      }
+      if (!movie || !time || !comment) { showToast("❌ Заполни все поля!"); return; }
+
+      // Проверка формата времени
+      const timeRegex = /^\d{2}:\d{2}:\d{2}$/;
+      if (!timeRegex.test(time)) { showToast("❌ Время должно быть в формате 00:45:10"); return; }
 
       submitBtn.classList.add("loading");
       submitBtn.innerHTML = '<span class="spinner"></span>';
 
-      await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ movie, time, comment })
-      });
+      await fetch(API_URL, { method: "POST", body: JSON.stringify({ movie, time, comment }) });
 
       submitBtn.classList.remove("loading");
       submitBtn.innerHTML = "Отправить";
